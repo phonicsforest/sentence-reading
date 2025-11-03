@@ -205,7 +205,8 @@ LESSONS[18] = [
   { text:"The big cat has a mane.",        image:"images/book18_2.png", cn:"大貓有鬃毛。" },
   { text:"He can ride in the car.",        image:"images/book18_3.png", cn:"他可以坐車。" },
   { text:"He has a life vest.",            image:"images/book18_4.png", cn:"他有救生衣。" },
-  { text:"The pig will dive.",             image:"images/book18_5.png", cn { text:"He can drive the big dump truck.", image:"images/book18_6.png", cn:"他會開大型自卸卡車。" },
+  { text:"The pig will dive.",             image:"images/book18_5.png", cn:"豬會潛水。" },
+  { text:"He can drive the big dump truck.", image:"images/book18_6.png", cn:"他會開大型自卸卡車。" },
 ];
 
 LESSONS[19] = [
@@ -225,6 +226,8 @@ LESSONS[20] = [
   { text:"She drove the truck.",             image:"images/book20_5.png", cn:"她開過貨車。" }
 ];
 
+
+
 LESSONS[21] = [
   { text:"It will make a big bang !",    image:"images/book21_1.png", cn:"這會發出一聲巨響！" },
   { text:"It is a knot.",                  image:"images/book21_2.png", cn:"這是一個結。" },
@@ -234,6 +237,7 @@ LESSONS[21] = [
   { text:"This king has a red robe.",      image:"images/book21_6.png", cn:"這位國王穿著紅色長袍。" },
   { text:"The man can sing a song.",              image:"images/book21_7.png", cn:"那個男人會唱歌。" }
 ];
+
 // ===== Lessons 22–37 (28,29,33 暫缺) =====
 LESSONS[22] = [
   { text:"That pile of trash must stink.", image:"images/book22_1.png", cn:"那堆垃圾一定很臭。" },
@@ -278,7 +282,6 @@ LESSONS[26] = [
   { text:"I see the man wave to me.",                          image:"images/book26_5.png", cn:"我看到那個男人向我揮手。" },
   { text:"A cat sits on the beach by a steaming hot spring .", image:"images/book26_6.png", cn:"一隻貓坐在溫泉旁的海灘上。" }
 ];
-
 LESSONS[27] = [
   { text:"She can see smoke in the black pot.", image:"images/book27_1.png",  cn:"她看見黑鍋裡冒出煙。" },
   { text:"I see the man slide.",                 image:"images/book27_2.png",  cn:"我看到那個男人在滑行。" },
@@ -352,6 +355,7 @@ LESSONS[34] = [
   { text:"The car sped by in a blur.",           image:"images/book34_6.png", cn:"那輛車一晃而過，如同一抹殘影。" }
 ];
 
+
 LESSONS[35] = [
   { text:"The man will wait for the note I sent.", image:"images/book35_1.png", cn:"那個男人會等我寄出的便條。" },
   { text:"He will put the mail in my box.",        image:"images/book35_2.png", cn:"他會把郵件放進我的信箱。" },
@@ -399,6 +403,7 @@ LESSONS[39] = [
   { text:"He plays in the sand at the beach.", image:"images/book39_7.png", cn:"他在海灘的沙地上玩耍。" },
   { text:"She sprays perfume.", image:"images/book39_8.png", cn:"她噴香水。" }
 ];
+
 
 LESSONS[40] = [
   { text:"That man has a tall hat.", image:"images/book40_1.png", cn:"那個男人戴著一頂高帽子。" },
@@ -472,6 +477,7 @@ LESSONS[47] = [
   { text:"Look ! His nose froze in the cold.", image:"images/book47_6.png", cn:"看！他的鼻子在寒冷中凍僵了。" },
   { text:"I see the cook cut the meat.", image:"images/book47_7.png", cn:"我看到廚師在切肉。" },
   { text:"He sleds down the steep hill.", image:"images/book47_8.png", cn:"他乘雪橇滑下陡坡。" },
+  { text:"Look at the huge pig !", image:"images/book47_9.png", cn:"看那隻巨大的豬！" },
   { text:"The tot can eat with a spoon.", image:"images/book47_10.png", cn:"小小孩會用湯匙吃東西。" }
 ];
 
@@ -496,7 +502,6 @@ LESSONS[49] = [
   { text:"My dear dad saw a deer in the woods.", image:"images/book49_5.png", cn:"我親愛的爸爸在樹林裡看到一隻鹿。" },
   { text:"Cheer rang in the room with joy.", image:"images/book49_6.png", cn:"歡呼聲在房間裡回蕩。" }
 ];
-
 LESSONS[50] = [
   { text:"The cook sang a funny tune.", image:"images/book50_1.png", cn:"廚師唱了一首有趣的曲子。" },
   { text:"The girl has a big candy cane.", image:"images/book50_2.png", cn:"女孩有一根很大的拐杖糖。" },
@@ -505,6 +510,7 @@ LESSONS[50] = [
   { text:"This man is cleaning the chimney.", image:"images/book50_5.png", cn:"這個男人正在清理煙囪。" },
   { text:"He is feeling very dizzy.", image:"images/book50_6.png", cn:"他覺得很頭暈。" }
 ];
+
 LESSONS[51] = [
   { text:"The funny man has a blue hat.", image:"images/book51_1.png", cn:"那個滑稽的男人戴著藍帽子。" },
   { text:"The ape has sung a funny song.", image:"images/book51_2.png", cn:"那隻猩猩唱了一首有趣的歌。" },
@@ -534,7 +540,6 @@ LESSONS[54] = [
   { text:"The car will not budge.", image:"images/book54_3.png", cn:"那輛車動也不動。" },
   { text:"She is the judge.", image:"images/book54_4.png", cn:"她是法官。" },
   { text:"He has a smudge on his green shirt.", image:"images/book54_5.png", cn:"他綠色的襯衫上有一個污漬。" }
-  { text:"Look at the huge pig !", image:"images/book47_9.png", cn:"看那隻巨大的豬！" },
 ];
 
 LESSONS[55] = [
@@ -727,8 +732,81 @@ LESSONS[74] = [
 
 LESSONS[75] = [
   { text:"He is dressed up as a cactus.", image:"images/book75_1.png", cn:"他打扮成仙人掌。" },
-  { text:"He is coming to my house for a visit.", image:"images/book75_2.png", cn:"他要來我家做客。" },
-  { text:"Be careful on the hill!", image:"images/book75_3.png", cn:"小心山坡！" },
-  { text:"The man's name is Robin Hood.", image:"images/book75_4.png", cn:"那個
+  { text:"He is coming to my house for a visit.", image:"images/book75_2.png", cn:"他要來我家拜訪。" },
+  { text:"Be careful on the hill!", image:"images/book75_3.png", cn:"在山坡上要小心！" },
+  { text:"The man's name is Robin Hood.", image:"images/book75_4.png", cn:"那個男人名叫羅賓漢。" },
+  { text:"Can the rabbit do magic?", image:"images/book75_5.png", cn:"那隻兔子會變魔術嗎？" },
+  { text:"He has a bunch of cards in the wagon.", image:"images/book75_6.png", cn:"他的小車裡有一疊卡牌。" },
+  { text:"Look! How did he make it vanish?", image:"images/book75_7.png", cn:"看！他是怎樣讓它消失的？" },
+  { text:"That mushroom is an armful.", image:"images/book75_8.png", cn:"那朵蘑菇大得要用雙手抱住。" }
+];
+
+LESSONS[76] = [
+  { text:"He flung it away.", image:"images/book76_1.png", cn:"他把它甩開了。" },
+  { text:"He will put away all of the pots.", image:"images/book76_2.png", cn:"他會收好所有的鍋子。" },
+  { text:"I can see her running away.", image:"images/book76_3.png", cn:"我看到她跑開了。" },
+  { text:"He did not want to unpack in the mud!", image:"images/book76_4.png", cn:"他不想在泥地裡打開行李！" },
+  { text:"Her desk is unclean.", image:"images/book76_5.png", cn:"她的書桌很髒。" },
+  { text:"When did she unwrap it?", image:"images/book76_6.png", cn:"她是什麼時候拆開的？" },
+  { text:"He can't unwind the snake from his arm.", image:"images/book76_7.png", cn:"他解不開纏在手臂上的蛇。" },
+  { text:"She can't unlock the door.", image:"images/book76_8.png", cn:"她打不開門鎖。" }
+];
+
+LESSONS[77] = [
+  { text:"She can refill her red cup.", image:"images/book77_1.png", cn:"她可以把紅杯子再裝滿。" },
+  { text:"He likes to reread the good parts.", image:"images/book77_2.png", cn:"他喜歡重讀精彩的部分。" },
+  { text:"The girl will renew her books.", image:"images/book77_3.png", cn:"那個女孩會續借她的書。" },
+  { text:"He needs to rehang it.", image:"images/book77_4.png", cn:"他需要重新掛起它。" },
+  { text:"He's going to return his piles of books.", image:"images/book77_5.png", cn:"他要把一堆書還回去。" },
+  { text:"The boy will have to rewrite it.", image:"images/book77_6.png", cn:"那個男孩得重新寫一次。" },
+  { text:"The dentist has a very big toothbrush.", image:"images/book77_7.png", cn:"牙醫有一把很大的牙刷。" },
+  { text:"The rabbit has a tall hat.", image:"images/book77_8.png", cn:"那隻兔子戴著高帽子。" },
+  { text:"She likes to play tennis.", image:"images/book77_9.png", cn:"她喜歡打網球。" },
+  { text:"He is coming to my house for a visit.", image:"images/book77_10.png", cn:"他要來我家拜訪。" }
+];
+
+LESSONS[78] = [
+  { text:"This man has a lot of talent.", image:"images/book78_1.png", cn:"這個男人很有才華。" },
+  { text:"The clown is flying out of the cannon.", image:"images/book78_2.png", cn:"小丑從大炮裡被射出來。" },
+  { text:"The boy is feeling playful today.", image:"images/book78_3.png", cn:"那個男孩今天心情很好，想玩。" },
+  { text:"This is a cheerful man!", image:"images/book78_4.png", cn:"這是一個開朗的男人！" },
+  { text:"The hammer is a useful tool.", image:"images/book78_5.png", cn:"鐵鎚是有用的工具。" },
+  { text:"This is a funny green dragon.", image:"images/book78_6.png", cn:"這是一條滑稽的綠龍。" },
+  { text:"The leader should not mistreat the man.", image:"images/book78_7.png", cn:"領導不應該虐待那個男人。" },
+  { text:"Her toys are made of plastic.", image:"images/book78_8.png", cn:"她的玩具是塑膠做的。" },
+  { text:"I like his funny costume.", image:"images/book78_9.png", cn:"我喜歡他那滑稽的服裝。" },
+  { text:"Did the airline misplace his luggage?", image:"images/book78_10.png", cn:"航空公司弄丟了他的行李嗎？" },
+  { text:"He will try not to misspell it.", image:"images/book78_11.png", cn:"他會盡量不拼錯字。" }
+];
+
+LESSONS[79] = [
+  { text:"He's playing the music loudly.", image:"images/book79_1.png", cn:"他把音樂放得很大聲。" },
+  { text:"The cook has a messy apron.", image:"images/book79_2.png", cn:"那位廚師的圍裙很髒亂。" },
+  { text:"The only one he can find is a mismatch.", image:"images/book79_3.png", cn:"他找到的唯一一個不相配。" },
+  { text:"They will go on a nature hike.", image:"images/book79_4.png", cn:"他們將去郊外遠足。" },
+  { text:"The tub fixture is broken.", image:"images/book79_5.png", cn:"浴缸的配件壞了。" },
+  { text:"I think she's going a little crazy!", image:"images/book79_6.png", cn:"我覺得她有點瘋了！" },
+  { text:"The disc jockey plays the music.", image:"images/book79_7.png", cn:"DJ正在播放音樂。" }
+];
+
+LESSONS[80] = [
+  { text:"She needs a key to get it open.", image:"images/book80_1.png", cn:"她需要一把鑰匙才能打開它。" },
+  { text:"She wrung it out over the fire.", image:"images/book80_2.png", cn:"她在火上把它擰乾。" },
+  { text:"He cooks a hot dog over the fire.", image:"images/book80_3.png", cn:"他在火上烤熱狗。" },
+  { text:"The student is at the bus stop.", image:"images/book80_4.png", cn:"那個學生在巴士站。" },
+  { text:"He is making music.", image:"images/book80_5.png", cn:"他正在創作音樂。" },
+  { text:"He doesn't want a spider in the house.", image:"images/book80_6.png", cn:"他不想家裡有蜘蛛。" },
+  { text:"She doesn't like the little rodent.", image:"images/book80_7.png", cn:"她不喜歡那隻小老鼠。" }
+];
+
+LESSONS[81] = [
+  { text:"This is called a three leaf clover.", image:"images/book81_1.png", cn:"這被稱為三葉草。" },
+  { text:"He is going over the speed limit.", image:"images/book81_2.png", cn:"他超速駕駛了。" },
+  { text:"The dentist is holding a molar.", image:"images/book81_3.png", cn:"牙醫拿著一顆臼齒。" },
+  { text:"The mouse is sick with a fever.", image:"images/book81_4.png", cn:"那隻老鼠發燒生病了。" },
+  { text:"He doesn't like the final score.", image:"images/book81_5.png", cn:"他不喜歡最後的比分。" },
+  { text:"The boat has a very big motor.", image:"images/book81_6.png", cn:"那艘船有很大的引擎。" },
+  { text:"The three dogs are being playful.", image:"images/book81_7.png", cn:"那三隻狗正開心地玩耍。" }
+];
 
 
