@@ -56,7 +56,7 @@ window.wordVariants = {
 };
 
 // phonics 拼唔到、要特別顯示（淺紅→深紅）兼可點擊發音
-window.SPECIAL_WORDS = ["i","do","to","the","come","you","have","could","your","some","many","there","what","any","said","here","would","does","into","who","their","two","give","over","where","other","most","our","only","move","doesn't","don't","onto"];
+window.SPECIAL_WORDS = ["i","do","to","the","come","you","have","could","your","some","many","there","what","any","said","here","would","does","into","who","their","two","give","over","where","other","most","our","only","move","doesn't","don't","onto","put","one","floor","out"];
 
 // 課本資料（1–8）
 window.LESSONS = {};
@@ -516,7 +516,7 @@ LESSONS[51] = [
   { text:"The ape has sung a funny song.", image:"images/book51_2.png", cn:"那隻猩猩唱了一首有趣的歌。" },
   { text:"He is singing badly.", image:"images/book51_3.png", cn:"他唱得很差。" },
   { text:"The witty man flew the plane.", image:"images/book51_4.png", cn:"那個機智的男人駕駛了飛機。" },
-  { text:"Do you think the clown is wacky?", image:"images/book51_5.png", cn:"你覺得那個小丑很古怪嗎？" }
+ // { text:"Do you think the clown is wacky?", image:"images/book51_5.png", cn:"你覺得那個小丑很古怪嗎？" }
 ];
 
 LESSONS[52] = [
@@ -694,7 +694,7 @@ LESSONS[70] = [
 ];
 
 LESSONS[71] = [
-  { text:"What is in the mixture?", image:"images/book71_1.png", cn:"這個混合物裡有什麼？" },
+  { text:"What is it in the mixture?", image:"images/book71_1.png", cn:"這個混合物裡有什麼？" },
   { text:"I think this is a cute little creature.", image:"images/book71_2.png", cn:"我覺得這是一隻可愛的小生物。" },
   { text:"He made a picture of a sailboat.", image:"images/book71_3.png", cn:"他畫了一艘帆船的圖畫。" },
   { text:"The man is giving a lecture.", image:"images/book71_4.png", cn:"那個男人正在演講。" },
