@@ -3,17 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <title>Read — Lessons, Recording UI, Punctuation, Prev/Redo/Skip/Next</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;overflow:hidden;font-family:system-ui,Arial;background:#fafafa}
 
-  .app{
-    height:100vh;width:100vw;
-    display:grid;
-    grid-template-columns:180px 1fr;
-    grid-template-rows:auto auto;
-    gap:8px;padding:10px;
-  }
+  .app{height:100vh;width:100vw;display:grid;grid-template-columns:180px 1fr;grid-template-rows:auto auto;gap:8px;padding:10px}
 
   .sidebar{grid-column:1 / 2;grid-row:1 / 3;display:flex;flex-direction:column;min-height:0}
   .lesson-title{font-weight:700;margin-bottom:6px}
@@ -23,74 +18,93 @@
   .lesson-item.active{font-weight:700;color:#1976d2}
   .lesson-item.disabled{opacity:.45;cursor:not-allowed}
 
-  .content-row{
-    grid-column:2;grid-row:1;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-  }
+  .content-row{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;gap:10px}
 
-  .panel{
-    width:900px;height:420px;
-    background:#fff;border:2px solid #aaa;border-radius:10px;
-    padding:10px;display:flex;flex-direction:row;gap:10px;align-items:center;
-  }
+  .panel{width:900px;height:420px;background:#fff;border:2px solid #aaa;border-radius:10px;padding:10px;display:flex;flex-direction:row;gap:10px;align-items:center}
 
-  .imgBox{height:100%;aspect-ratio:1/1;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;}
+  .imgBox{height:100%;aspect-ratio:1/1;overflow:hidden;display:flex;align-items:center;justify-content:center}
   #pixCanvas{width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
   #pageImg{display:none}
 
   .textCol{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
-#sentenceWrap{width:100%;height:72%;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#translation{width:100%;height:18%;display:flex;align-items:center;justify-content:center;color:#333;font-size:22px;text-align:center;margin-top:4px}
-  .punct{color:#666;margin:0 2px}
-
-  .word{margin:0 6px;display:inline-block;color:#aaa;cursor:default;transition:color .2s}
-  .word.correct{color:#000}
-  .word.skipped{color:#aaa !important}
-  .word.special{color:#f88;cursor:pointer}
-  .word.special.correct{color:#b00}
-
+  #sentenceWrap{width:100%;height:72%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  #sentence{max-width:100%;text-align:center;line-height:1.18}
   #translation{width:100%;height:22%;display:flex;align-items:center;justify-content:center;color:#333;font-size:22px;text-align:center;margin-top:8px}
 
-  .round-btn{
-    width:56px;height:56px;border-radius:50%;border:none;
-    background:#e53935;color:#fff;font-size:24px;font-weight:700;
-    cursor:pointer;transition:transform .15s;margin:0 4px;
+/* 標點永遠黏住前一個字，不可獨立換行 */
+.punct {
+  display: inline-block;  /* 改成 inline-block 可以鎖在同一行 */
+  white-space: nowrap;    /* 防止標點被拆行 */
+  color: #777;
+  margin-left: 2px;       /* 與前字少少距離 */
+  margin-right: 0;
+}
+.o-nest{
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+/* 長音：在該元音上方畫橫線（-o, -e 等）*/
+.macron{
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+.macron::after{
+  content: '';
+  position: absolute;
+  width: 60%; 
+  left: 20%; 
+  top: 0.1em;   /* 由 -0.18em → -0.08em ＝ 線條下降貼近字母 */
+  height: 0.05em; /* 粗幼保持，如要更幼可改 0.05em */
+  background: currentColor;
+  border-radius: 1px;
+  pointer-events: none;
+}
+/* 防止字內 span 造成錯誤換行 */
+.word > *{ white-space:nowrap; }
+
+.o-nest::after{
+  content: 'o';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-20%);  /* 由 -45% → -35% ＝ 再向下貼近少少 */
+  font-size: 0.36em;            /* 由 0.38em → 0.36em，比例更自然 */
+  line-height: 1;
+  opacity: .85;
+  pointer-events: none;
+}  .word{margin:0 6px;display:inline-block;color:#aaa;cursor:default;transition:color .2s;white-space:nowrap}
+  .word.correct{color:#000}
+  .word.skipped{color:#000!important;font-weight:normal;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
+  .word.special{color:#f88;cursor:pointer}
+  .word.special.correct{color:#b00}
+  .word.special.skipped{color:#cc3333!important;font-weight:normal;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
+
+  .syllable-split{
+    display:inline-block;width:0;height:1.05em;border-left:1.6px dashed #8f8f8f;
+    vertical-align:top;transform:translateY(0.03em);margin:0;pointer-events:none;
+    border-image:repeating-linear-gradient(to bottom,#8f8f8f 0,#8f8f8f 2px,transparent 6px,transparent 10px) 1;
   }
+
+  .round-btn{width:56px;height:56px;border-radius:50%;border:none;background:#e53935;color:#fff;font-size:24px;font-weight:700;cursor:pointer;transition:transform .15s;margin:0 4px}
   .round-btn:hover{transform:scale(1.06)}
   .round-btn:disabled{opacity:.4;cursor:not-allowed}
 
-  .link-btn{background:none;border:none;color:#111;cursor:pointer;
-    font-size:16px;padding:6px 10px;margin:0 6px;
-    display:inline-flex;align-items:center;justify-content:center;
-    min-width:46px;height:40px;}
+  .link-btn{background:none;border:none;color:#111;cursor:pointer;font-size:16px;padding:6px 10px;margin:0 6px;display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:40px}
   .link-btn:disabled{opacity:.4;cursor:not-allowed}
 
-  .controls{
-    grid-column:2;grid-row:2;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    margin-top:-4px;
-  }
+  .controls{grid-column:2;grid-row:2;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
 
   .summary{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:10px;text-align:center}
   .summary h2{margin:6px 0 8px;font-size:28px}
   .summary .line{margin:4px 0;font-size:22px}
   .skipped{color:#c00;font-weight:700}
 
-  .link-btn.rec{ padding:0; width:40px; height:40px; }
-  .link-btn.rec .rec-dot{
-    width:14px;height:14px;border-radius:50%;background:#e53935;position:relative;
-  }
-  .link-btn.rec .rec-dot::after{
-    content:""; position:absolute; inset:-8px;
-    border:4px solid #e53935; border-radius:50%;
-    animation:recPulse 1.6s ease-out infinite; opacity:.6;
-  }
-  @keyframes recPulse{
-    0%{ transform:scale(.6); opacity:.6; }
-    70%{ transform:scale(1); opacity:.1; }
-    100%{ transform:scale(1); opacity:0; }
-  }
+  .link-btn.rec{padding:0;width:40px;height:40px}
+  .link-btn.rec .rec-dot{width:14px;height:14px;border-radius:50%;background:#e53935;position:relative}
+  .link-btn.rec .rec-dot::after{content:"";position:absolute;inset:-8px;border:4px solid #e53935;border-radius:50%;animation:recPulse 1.6s ease-out infinite;opacity:.6}
+  @keyframes recPulse{0%{transform:scale(.6);opacity:.6}70%{transform:scale(1);opacity:.1}100%{transform:scale(1);opacity:0}}
 </style>
 </head>
 <body>
@@ -122,20 +136,20 @@
   </div>
 </div>
 
-<!-- ✅ 改為從外部 data.js 載入 -->
 <script src="data.js"></script>
-
 <script>
-if (typeof LESSONS === 'undefined') {
-  alert('未載入 data.js！請確認檔案存在並正確連結。');
-}
+/* ---------- 安全後備 ---------- */
+window.SPECIAL_WORDS = Array.isArray(window.SPECIAL_WORDS) ? window.SPECIAL_WORDS : [];
+window.wordVariants  = window.wordVariants || {};
+if (typeof window.LESSONS === 'undefined') { alert('未載入 data.js！'); window.LESSONS = {}; }
 
-/* ===================== 基本變數 ===================== */
-const lessonListEl=document.getElementById('lessonList');
-let pixCanvas=document.getElementById('pixCanvas');
-let ctx=pixCanvas.getContext('2d',{willReadFrequently:true});
-let sentenceDiv=document.getElementById('sentence');
-let translationEl=document.getElementById('translation');
+/* ---------- DOM ---------- */
+const lessonListEl = document.getElementById('lessonList');
+let pixCanvas = document.getElementById('pixCanvas');
+let ctx       = pixCanvas.getContext('2d',{willReadFrequently:true});
+let sentenceDiv   = document.getElementById('sentence');
+let translationEl = document.getElementById('translation');
+let sentenceWrap  = document.getElementById('sentenceWrap');
 
 const prevBtn=document.getElementById('prevBtn');
 const nextBtn=document.getElementById('nextBtn');
@@ -143,37 +157,27 @@ const startBtn=document.getElementById('startBtn');
 const redoBtn=document.getElementById('redoBtn');
 const skipBtn=document.getElementById('skipBtn');
 
-
-let currentLesson=1;
-let pages=LESSONS[currentLesson];
-let pageIdx=0;
+/* ---------- 狀態 ---------- */
+let currentLesson = 1;
+let pages = getPagesFromLessons(currentLesson);
+let pageIdx = 0;
 let words=[],spans=[],wordSpanIdx=[];
 let currentIndex=0,correctCount=0;
 let recognition=null,isRunning=false,pausedBetween=false,wentBackOnce=false;
 const pageStates=[];
 
-function autoFitTwoLines(){
-  // 以較大的起始字級開始，視需要再慢慢縮
-  let size = 80;
-  sentenceDiv.style.fontSize = size + 'px';
-
-const maxH = sentenceWrap.clientHeight * 0.95;  // 略留空間
-  // 如高度或寬度超出容器，就每次減 2px，直到仍在兩行內
-  while ((sentenceDiv.scrollHeight > maxH || sentenceDiv.clientWidth > sentenceWrap.clientWidth) && size > 26) {
-    size -= 2;
-    sentenceDiv.style.fontSize = size + 'px';
-  }
+/* ========== helpers ========== */
+function getPagesFromLessons(idx){
+  const L = LESSONS[idx];
+  if (!L) return [];
+  return Array.isArray(L) ? L : (Array.isArray(L.pages) ? L.pages : []);
 }
-window.addEventListener('resize', autoFitTwoLines);
 
 function resetLessonState(newPages){
-  // 清晒上一課的狀態，重新建立乾淨的 pageStates
-  pageStates.splice(0, pageStates.length);   // 等同清空陣列
-  for (let i = 0; i < newPages.length; i++) {
-    pageStates[i] = { correct: new Set(), skipped: new Set(), finished: false };
+  pageStates.length = 0;
+  for (let i=0;i<newPages.length;i++){
+    pageStates[i] = {correct:new Set(), skipped:new Set(), finished:false};
   }
-
-  // 重置進度變數
   pageIdx = 0;
   currentIndex = 0;
   correctCount = 0;
@@ -181,205 +185,382 @@ function resetLessonState(newPages){
   wentBackOnce = false;
 }
 
-const stRaw = pageStates[pageIdx];
-const st = stRaw
-  ? { correct: new Set(stRaw.correct), skipped: new Set(stRaw.skipped), finished: !!stRaw.finished }
-  : { correct: new Set(), skipped: new Set(), finished: false };
-
-/* ===================== 課本清單 ===================== */
-function renderLessonList(){
-  lessonListEl.innerHTML='';
-  for(let i=1;i<=110;i++){
-    const item=document.createElement('div');
-    item.className='lesson-item';
-    if(i===currentLesson)item.classList.add('active');
-    if(!LESSONS[i])item.classList.add('disabled');
-    item.textContent='Lesson '+i;
-item.onclick = () => {
-  if(!LESSONS[i]) return alert('Lesson '+i+' 未設定內容');
-
-  // 若剛剛顯示 Finish，要重建 panel
-  const panel = document.getElementById('panel');
-  if (!panel.querySelector('#sentenceWrap')) {
-    panel.innerHTML = `
-      <div class="imgBox">
-        <canvas id="pixCanvas"></canvas>
-        <img id="pageImg" alt="">
-      </div>
-      <div class="textCol">
-        <div id="sentenceWrap"><div id="sentence"></div></div>
-        <div id="translation"></div>
-      </div>`;
-    pixCanvas = document.getElementById('pixCanvas');
-    ctx = pixCanvas.getContext('2d',{willReadFrequently:true});
-    sentenceDiv = document.getElementById('sentence');
-    translationEl = document.getElementById('translation');
-    document.querySelector('.controls').style.display = 'flex';
+function autoFitTwoLines(){
+  let size = 80;
+  sentenceDiv.style.fontSize = size + 'px';
+  const maxH = sentenceWrap.clientHeight * 0.95;
+  while ((sentenceDiv.scrollHeight > maxH || sentenceDiv.scrollWidth > sentenceWrap.clientWidth) && size > 26) {
+    size -= 2;
+    sentenceDiv.style.fontSize = size + 'px';
   }
+}
+window.addEventListener('resize', autoFitTwoLines);
 
-  currentLesson = i;
-  pages = LESSONS[i];
-  resetLessonState(pages);   // ← 建議一起用這個重置函數
-  renderLessonList();
-  renderPageFromState();
-  updateButtons();
-};
+/* ========== 課本清單 ========== */
+function renderLessonList(){
+  lessonListEl.innerHTML = '';
+  const keys = Object.keys(LESSONS).map(n=>+n).filter(n=>!isNaN(n));
+  const maxIdx = keys.length ? Math.max(...keys) : 1;
+
+  for (let i=1;i<=maxIdx;i++){
+    const has = !!LESSONS[i];
+    const item = document.createElement('div');
+    item.className = 'lesson-item';
+    if (i===currentLesson) item.classList.add('active');
+    if (!has) item.classList.add('disabled');
+
+    const title = has && !Array.isArray(LESSONS[i]) && LESSONS[i].title ? LESSONS[i].title : ('Lesson ' + i);
+    item.textContent = title;
+
+    item.onclick = () => {
+      if (!LESSONS[i]) { alert('Lesson ' + i + ' 未設定內容'); return; }
+
+      const panel = document.getElementById('panel');
+      if (!panel.querySelector('#sentenceWrap')) {
+        panel.innerHTML = `
+          <div class="imgBox">
+            <canvas id="pixCanvas"></canvas>
+            <img id="pageImg" alt="">
+          </div>
+          <div class="textCol">
+            <div id="sentenceWrap"><div id="sentence"></div></div>
+            <div id="translation"></div>
+          </div>`;
+        pixCanvas    = document.getElementById('pixCanvas');
+        ctx          = pixCanvas.getContext('2d',{willReadFrequently:true});
+        sentenceDiv  = document.getElementById('sentence');
+        translationEl= document.getElementById('translation');
+        sentenceWrap = document.getElementById('sentenceWrap');
+        document.querySelector('.controls').style.display = 'flex';
+      }
+
+      currentLesson = i;
+      pages = getPagesFromLessons(i);
+      resetLessonState(pages);
+      renderLessonList();
+      renderPageFromState();
+      updateButtons();
+    };
+
     lessonListEl.appendChild(item);
   }
 }
 renderLessonList();
 
-/* ===================== 畫像素圖 ===================== */
-const sourceImg=new Image();
-sourceImg.onload=()=>drawPixelate(0);
+/* ========== Pixelate 圖片 ========== */
+const sourceImg = new Image();
+sourceImg.onload = ()=>drawPixelate(0);
 function drawPixelate(progress){
-  const box=pixCanvas.parentElement.getBoundingClientRect();
-  const w=sourceImg.width,h=sourceImg.height;if(!w)return;
-  const scale=Math.min(box.width/w,box.height/h);
-  const drawW=w*scale,drawH=h*scale;
-  pixCanvas.width=drawW;pixCanvas.height=drawH;
-  const maxCell=40;
-  const cell=Math.max(1,Math.round(maxCell*(1-progress)));
-  const off=document.createElement('canvas');off.width=Math.ceil(drawW/cell);off.height=Math.ceil(drawH/cell);
-  const octx=off.getContext('2d',{willReadFrequently:true});
-  octx.imageSmoothingEnabled=false;octx.drawImage(sourceImg,0,0,off.width,off.height);
-  ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,drawW,drawH);
+  const box = pixCanvas.parentElement.getBoundingClientRect();
+  const w = sourceImg.width, h = sourceImg.height; if(!w) return;
+  const scale = Math.min(box.width/w, box.height/h);
+  const drawW = w*scale, drawH = h*scale;
+  pixCanvas.width = drawW; pixCanvas.height = drawH;
+  const maxCell = 40;
+  const cell = Math.max(1, Math.round(maxCell*(1-progress)));
+  const off = document.createElement('canvas'); off.width = Math.ceil(drawW/cell); off.height = Math.ceil(drawH/cell);
+  const octx = off.getContext('2d',{willReadFrequently:true});
+  octx.imageSmoothingEnabled=false; octx.drawImage(sourceImg,0,0,off.width,off.height);
+  ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,drawW,drawH);
   ctx.drawImage(off,0,0,off.width,off.height,0,0,drawW,drawH);
 }
-function setProgress(p){drawPixelate(Math.max(0,Math.min(1,p)));}
+function setProgress(p){ drawPixelate(Math.max(0,Math.min(1,p))); }
 
-/* ===================== 渲染頁面 ===================== */
+/* ========== 渲染頁面（含標點與 | 虛線） ========== */
+
 function renderPageFromState(){
-  const p=pages[pageIdx];
-  if(!p)return;
-  sourceImg.src=p.image;
-  sentenceDiv.innerHTML='';translationEl.textContent='';
-  spans=[];wordSpanIdx=[];
-  const tokens=p.text.match(/[A-Za-z']+|[^\s]/g)||[];
-  words=tokens.filter(t=>/^[A-Za-z']+$/.test(t));
-  const st=pageStates[pageIdx]||{correct:new Set(),skipped:new Set(),finished:false};
-  let wordCounter=0;
-  tokens.forEach(t=>{
-    const sp=document.createElement('span');
-    if(/^[A-Za-z']+$/.test(t)){
-      sp.textContent=t;sp.className='word';
-      const lower=t.toLowerCase();
-      if(SPECIAL_WORDS.includes(lower))sp.classList.add('special');
-      if(st.correct.has(wordCounter))sp.classList.add('correct');
-      if(st.skipped.has(wordCounter))sp.classList.add('skipped');
-      sp.addEventListener('click',()=>{if(sp.classList.contains('special'))speakWord(t);});
-      wordSpanIdx.push(spans.length);wordCounter++;
-    }else{sp.textContent=t;sp.className='punct';}
-    sentenceDiv.appendChild(sp);spans.push(sp);
-  });
-  correctCount=st.correct.size;
-  if(st.finished){setProgress(1);translationEl.textContent=p.cn;pausedBetween=true;}
-  else{setProgress(correctCount/Math.max(1,words.length));pausedBetween=false;}
-  currentIndex=(st.finished)?words.length:Math.min(words.length,(st.correct.size+st.skipped.size));
-  autoFitTwoLines();
-updateButtons();
+  try{
+    if (!pages || !pages.length){
+      sentenceDiv.textContent = '';
+      translationEl.textContent = '';
+      return;
+    }
 
+    const p = pages[pageIdx] || {};
+    if (p.image) sourceImg.src = p.image;
+
+    sentenceDiv.innerHTML = '';
+    translationEl.textContent = '';
+    spans = [];
+    wordSpanIdx = [];
+
+    const raw = (p.text || '');
+    // 把英文字、分隔符「|」、標記「*」「-」、空白、其他標點分開
+    const tokens = raw.match(/[A-Za-z']+|[\|\*\-]|\s+|[^\w\s]/g) || [];
+
+    // ---- 把 word|word、*、- 合併成一個「邏輯單字」並記錄每段的標記 ----
+    const logical = [];
+    for (let i = 0; i < tokens.length; i++) {
+      const tk = tokens[i];
+
+      // 如果是標記在字首：-word / *word
+      if ((tk === '-' || tk === '*') && /^[A-Za-z']+$/.test(tokens[i+1] || '')) {
+        const mark = tk;
+        const first = tokens[i+1];
+        const parts = [{ text:first, before:(mark === '-' ? 'hyphen' : 'asterisk') }];
+        i += 1;
+        // 後面還可能跟著 |word / -word / *word
+        let j = i + 1;
+        while (j < tokens.length) {
+          const sep = tokens[j];
+          const nxt = tokens[j+1];
+          if ((sep === '|' || sep === '-' || sep === '*') && /^[A-Za-z']+$/.test(nxt || '')) {
+            parts.push({ text:nxt, before: (sep==='|'?'split': (sep==='-'?'hyphen':'asterisk')) });
+            j += 2;
+          } else break;
+        }
+        logical.push({ type:'word', parts, text: parts.map(x=>x.text).join('') });
+        i = j - 1;
+        continue;
+      }
+
+      // 普通以字母開頭的段
+      if (/^[A-Za-z']+$/.test(tk)) {
+        const parts = [{ text: tk, before: null }];
+        let j = i + 1;
+        while (j < tokens.length) {
+          const sep = tokens[j];
+          const nxt = tokens[j+1];
+          if ((sep === '|' || sep === '-' || sep === '*') && /^[A-Za-z']+$/.test(nxt || '')) {
+            parts.push({ text: nxt, before: (sep==='|'?'split': (sep==='-'?'hyphen':'asterisk')) });
+            j += 2;
+          } else break;
+        }
+        logical.push({ type:'word', parts, text: parts.map(x=>x.text).join('') });
+        i = j - 1;
+        continue;
+      }
+
+      if (/^\s+$/.test(tk)) {            // 空白保留
+        logical.push({ type:'space', text: tk });
+      } else if (tk === '|' || tk === '-' || tk === '*') {
+        // 單獨出現的標記丟掉（不渲染）
+        continue;
+      } else {
+        // 其他全部視為標點
+        logical.push({ type:'punct', text: tk });
+      }
+    }
+
+    // 語音對比只看拼接後的字母
+    words = logical.filter(n => n.type === 'word').map(n => n.text);
+
+    const st = pageStates[pageIdx] || { correct:new Set(), skipped:new Set(), finished:false };
+    let wordCounter = 0;
+
+    // ---- 逐個節點渲染 ----
+    logical.forEach(node => {
+      if (node.type === 'space') {
+        sentenceDiv.appendChild(document.createTextNode(node.text));
+        return;
+      }
+
+      if (node.type === 'word') {
+        const w = document.createElement('span');
+        w.className = 'word';
+        const lower = node.text.toLowerCase();
+        if (Array.isArray(SPECIAL_WORDS) && SPECIAL_WORDS.includes(lower)) w.classList.add('special');
+        if (st.correct.has(wordCounter)) w.classList.add('correct');
+        if (st.skipped.has(wordCounter)) w.classList.add('skipped');
+
+        // 把各個 parts 串起來，處理 | / * / -
+        node.parts.forEach((part, idx) => {
+          if (part.before === 'split') {
+            const bar = document.createElement('span');
+            bar.className = 'syllable-split';
+            bar.setAttribute('aria-hidden','true');
+            w.appendChild(bar);
+          }
+          if (part.before === 'asterisk') {
+            // 在該段第一個字母（通常是 o/O）內嵌一個小 o
+            const ch = part.text.charAt(0);
+            if (/[oO]/.test(ch)) {
+              const oo = document.createElement('span');
+              oo.className = 'o-nest';
+              oo.textContent = ch;
+              w.appendChild(oo);
+              if (part.text.length > 1) w.appendChild(document.createTextNode(part.text.slice(1)));
+              return;
+            }
+            // 如果不是 o，就當普通文字拼上
+          }
+          if (part.before === 'hyphen') {
+            // 在該段第一個字母上方加橫線
+            const ch = part.text.charAt(0) || '';
+            if (ch) {
+              const mac = document.createElement('span');
+              mac.className = 'macron';
+              mac.textContent = ch;
+              w.appendChild(mac);
+              if (part.text.length > 1) w.appendChild(document.createTextNode(part.text.slice(1)));
+              return;
+            }
+          }
+          // 普通拼字
+          w.appendChild(document.createTextNode(part.text));
+        });
+
+        w.addEventListener('click', ()=>{ if (w.classList.contains('special')) speakWord(node.text); });
+        sentenceDiv.appendChild(w);
+        wordSpanIdx.push(spans.length);
+        spans.push(w);
+        wordCounter++;
+        return;
+      }
+
+      if (node.type === 'punct') {
+        // 將標點附著在上一個 word/標點節點內，避免單獨換行
+        const prev = sentenceDiv.lastChild;
+        const pSpan = document.createElement('span');
+        pSpan.className = 'punct';
+        pSpan.textContent = node.text;
+        pSpan.style.whiteSpace = 'nowrap';
+        if (prev && prev.nodeType === 1) {
+          prev.appendChild(pSpan);
+        } else {
+          sentenceDiv.appendChild(pSpan);
+        }
+        spans.push(pSpan);
+        return;
+      }
+    });
+
+    // 進度 / 翻譯
+    correctCount = st.correct.size;
+    if (st.finished) {
+      setProgress(1);
+      translationEl.textContent = p.cn || '';
+      pausedBetween = true;
+    } else {
+      setProgress(correctCount / Math.max(1, words.length));
+      pausedBetween = false;
+    }
+    currentIndex = st.finished ? words.length : Math.min(words.length, (st.correct.size + st.skipped.size));
+
+    if (typeof autoFitTwoLines === 'function') autoFitTwoLines();
+    if (typeof updateButtons === 'function') updateButtons();
+
+  } catch (e) {
+    console.error('[renderPageFromState]', e);
+  }
 }
 
-/* ===================== 儲存狀態 ===================== */
+
+/* ========== 狀態保存/語音/控制（原樣） ========== */
 function saveState(finished=false){
-  const correct=new Set(),skipped=new Set();
+  const correct=new Set(), skipped=new Set();
   for(let i=0;i<wordSpanIdx.length;i++){
     const sp=spans[wordSpanIdx[i]];
-    if(sp.classList.contains('correct'))correct.add(i);
-    if(sp.classList.contains('skipped'))skipped.add(i);
+    if(sp.classList.contains('correct')) correct.add(i);
+    if(sp.classList.contains('skipped')) skipped.add(i);
   }
-  pageStates[pageIdx]={correct,skipped,finished};
+  pageStates[pageIdx] = {correct, skipped, finished};
 }
 
-/* ===================== 錄音辨識 ===================== */
 function containsWholeWord(spoken,variants){
   const tokens=spoken.toLowerCase().split(/\W+/).filter(Boolean);
-  const set=new Set(tokens);
-  return variants.some(v=>set.has(v.toLowerCase()));
+  const set=new Set(tokens); return variants.some(v=>set.has(v.toLowerCase()));
 }
 function ensureRecognizer(){
-  if(recognition)return recognition;
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR)return alert('Browser not supported');
-  recognition=new SR();
-  recognition.lang='en-GB';
-  recognition.continuous=true;
+  if(recognition) return recognition;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('Browser not supported'); return null; }
+  recognition=new SR(); recognition.lang='en-GB'; recognition.continuous=true;
   recognition.onstart=()=>{isRunning=true;showRecordingUI(true);updateButtons();};
   recognition.onend=()=>{if(isRunning){try{recognition.start();}catch(e){}showRecordingUI(true);}else showRecordingUI(false);updateButtons();};
-  recognition.onresult=e=>{
-    if(!isRunning||pausedBetween)return;
+  recognition.onresult=(e)=>{
+    if(!isRunning||pausedBetween) return;
     const said=e.results[e.results.length-1][0].transcript.trim().toLowerCase();
-    if(currentIndex>=words.length)return;
+    if(currentIndex>=words.length) return;
     const tgt=words[currentIndex].toLowerCase();
     const variants=(wordVariants[tgt]||[tgt]);
     const ok=containsWholeWord(said,variants);
     if(ok){
       spans[wordSpanIdx[currentIndex]].classList.add('correct');
-      currentIndex++;correctCount++;
-      setProgress(correctCount/Math.max(1,words.length));
-      if(currentIndex>=words.length)finishSentence();
-      saveState(false);updateButtons();
+      currentIndex++; correctCount++; setProgress(correctCount/Math.max(1,words.length));
+      if(currentIndex>=words.length) finishSentence();
+      saveState(false); updateButtons();
     }
   };
   return recognition;
 }
 
-/* ===================== 按鈕 ===================== */
-startBtn.onclick=async()=>{
-  const s=await navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>null);
-  if(s)s.getTracks().forEach(t=>t.stop());
-  const r=ensureRecognizer();if(!r)return;
-  try{r.start();}catch(e){}
-};
-skipBtn.onclick=()=>{if(!isRunning||pausedBetween)return;
-  spans[wordSpanIdx[currentIndex]]?.classList.add('skipped');
-  currentIndex++;if(currentIndex>=words.length)finishSentence();
-  saveState(false);updateButtons();};
-redoBtn.onclick=()=>{wordSpanIdx.forEach(i=>{spans[i].classList.remove('correct','skipped');});
-  currentIndex=0;correctCount=0;pausedBetween=false;translationEl.textContent='';setProgress(0);saveState(false);updateButtons();};
-prevBtn.onclick=()=>{if(pageIdx>0){saveState(isPageDone());pageIdx--;wentBackOnce=true;renderPageFromState();updateButtons();}};
-nextBtn.onclick=()=>{saveState(isPageDone());if(pageIdx<pages.length-1){pageIdx++;renderPageFromState();updateButtons();}else showSummary();};
+startBtn.onclick=async()=>{ const s=await navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>null); if(s) s.getTracks().forEach(t=>t.stop()); const r=ensureRecognizer(); if(!r) return; try{r.start();}catch(e){} };
+skipBtn.onclick=()=>{ if(!isRunning||pausedBetween) return; spans[wordSpanIdx[currentIndex]]?.classList.add('skipped'); currentIndex++; if(currentIndex>=words.length) finishSentence(); saveState(false); updateButtons(); };
+redoBtn.onclick=()=>{ wordSpanIdx.forEach(i=>spans[i].classList.remove('correct','skipped')); currentIndex=0; correctCount=0; pausedBetween=false; translationEl.textContent=''; setProgress(0); saveState(false); updateButtons(); };
+prevBtn.onclick=()=>{ if(pageIdx>0){ saveState(isPageDone()); pageIdx--; wentBackOnce=true; renderPageFromState(); updateButtons(); } };
+nextBtn.onclick=()=>{ saveState(isPageDone()); if(pageIdx<pages.length-1){ pageIdx++; renderPageFromState(); updateButtons(); } else showSummary(); };
 
-function finishSentence(){pausedBetween=true;setProgress(1);translationEl.textContent=pages[pageIdx].cn;saveState(true);updateButtons();}
-function isPageDone(){const st=pageStates[pageIdx];if(st?.finished)return true;
-  const done=(st?.correct?.size||0)+(st?.skipped?.size||0);return done>=words.length&&words.length>0;}
-function updateButtons(){
-  prevBtn.style.display=(pageIdx>0)?'inline-block':'none';
-  redoBtn.style.display=wentBackOnce?'inline-block':'none';
-  nextBtn.disabled=!isPageDone();
-  skipBtn.disabled=!isRunning||pausedBetween||isPageDone();
-  showRecordingUI(isRunning);
-}
-function showRecordingUI(on){
-  if(on){startBtn.classList.add('rec');startBtn.innerHTML='<span class="rec-dot"></span>';}
-  else{startBtn.classList.remove('rec');startBtn.textContent='Start';}
-}
+function finishSentence(){ pausedBetween=true; setProgress(1); translationEl.textContent=pages[pageIdx].cn||''; saveState(true); updateButtons(); }
+function isPageDone(){ const st=pageStates[pageIdx]; if(st?.finished) return true; const done=(st?.correct?.size||0)+(st?.skipped?.size||0); return done>=words.length&&words.length>0; }
+function updateButtons(){ prevBtn.style.display=(pageIdx>0)?'inline-block':'none'; redoBtn.style.display=wentBackOnce?'inline-block':'none'; nextBtn.disabled=!isPageDone(); skipBtn.disabled=!isRunning||pausedBetween||isPageDone(); showRecordingUI(isRunning); }
+function showRecordingUI(on){ if(on){ startBtn.classList.add('rec'); startBtn.innerHTML='<span class="rec-dot"></span>'; } else { startBtn.classList.remove('rec'); startBtn.textContent='Start'; } }
 
-/* ===================== 完成頁 ===================== */
 function showSummary(){
   document.querySelector('.controls').style.display='none';
-  const panel=document.getElementById('panel');
-  panel.innerHTML='<div class="summary"><h2>Finish</h2></div>';
-  const wrap=panel.querySelector('.summary');
-  pageStates.forEach((st,idx)=>{
-    const line=document.createElement('div');line.className='line';
-    const tokens=pages[idx].text.match(/[A-Za-z']+|[^\s]/g)||[];
-    let wc=0;
-    tokens.forEach(t=>{
-      const sp=document.createElement('span');
-      sp.textContent=t+' ';
-      if(/^[A-Za-z']+$/.test(t)&&st?.skipped?.has(wc))sp.className='skipped';
-      if(/^[A-Za-z']+$/.test(t))wc++;
-      line.appendChild(sp);
+  const panel = document.getElementById('panel');
+  panel.innerHTML = '<div class="summary"><h2>Finish</h2></div>';
+  const wrap = panel.querySelector('.summary');
+
+  pageStates.forEach((st, idx) => {
+    const line = document.createElement('div');
+    line.className = 'line';
+
+    const raw = pages[idx].text || '';
+
+    // 1) 去掉所有音節與標記：|、*、以及「緊貼字母」的 -
+    //    （保留真正的連字符如需要可按情況收窄規則）
+    const safe = raw
+      .replace(/\|/g, '')
+      .replace(/\*/g, '')
+      .replace(/-(?=[A-Za-z])/g, '');
+
+    // 2) 重新切 token：word / 空白 / 其他標點符號
+    const tokens = safe.match(/[A-Za-z']+|\s+|[^\w\s]/g) || [];
+
+    // 3) 根據 skipped set 上色（只對「字」計數）
+    let wc = 0;
+    tokens.forEach(t => {
+      if (/^[A-Za-z']+$/.test(t)) {
+        const sp = document.createElement('span');
+        sp.textContent = t;
+        if (st?.skipped?.has(wc)) sp.className = 'skipped';
+        wc++;
+        line.appendChild(sp);
+      } else {
+        // 空白或標點照樣輸出
+        const sp = document.createElement('span');
+        sp.textContent = t;
+        line.appendChild(sp);
+      }
     });
+
+    // 4) 如句尾無 .?! 就補一個句號
+    const txt = line.textContent || '';
+    if (!/[.?!]\s*$/.test(txt)) {
+      const dot = document.createElement('span');
+      dot.className = 'punct';
+      dot.textContent = '.';
+      line.appendChild(dot);
+    }
+
     wrap.appendChild(line);
   });
 }
-function speakWord(w){const u=new SpeechSynthesisUtterance(w);u.lang='en-GB';speechSynthesis.speak(u);}
+function speakWord(w){ const u=new SpeechSynthesisUtterance(w); u.lang='en-GB'; speechSynthesis.speak(u); }
 
-/* ===================== 初始化 ===================== */
-pages=LESSONS[currentLesson];pageStates.length=pages.length;renderPageFromState();updateButtons();
+/* ---------- 初始化 ---------- */
+resetLessonState(pages);
+renderPageFromState();
+updateButtons();
+
+/* 視窗改變重畫 */
+window.addEventListener('resize', ()=>{
+  const st=pageStates[pageIdx];
+  const prog=st?.finished?1:((st?.correct?.size||0)/Math.max(1,words.length));
+  drawPixelate(prog);
+  autoFitTwoLines();
+});
 </script>
 </body>
 </html>
